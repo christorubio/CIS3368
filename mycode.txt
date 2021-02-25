@@ -1,6 +1,14 @@
 This is my code file
 Python here... 
 
+Class File
+class Contacts:
+    def __init__(self, id, contactDetails, creationDate):
+        self.id = id
+        self.contactDetails = contactDetails
+        self.creationDate = creationDate
+        
+More python code here...
 from contacts import Contacts
 import datetime
 from datetime import date
@@ -43,10 +51,59 @@ def execute_read_query(connection, query):
 
 connection = create_connection("cis3368.cmzgnnpcpmtg.us-east-2.rds.amazonaws.com", "crubio", "iLOVEjesus1019!", "cis3368DB")
 
-#Listing the menu of choices and getting the user input 
-print("MENU \n a - Add contact \n d - Remove contact \n u - Update contact details \n b - Output all contacts in alphabetical order\n c - Output all contacts by creation date \n o - Output all contacts \n q - Quit")
-user_input = input("\nChoose an option: " )
-print(user_input)
+#Defining what happens to the database depending on the user option
+
+#if user inputs 'o'  
+def allContacts(): 
+    allOutput = "SELECT * FROM contacts"
+    contacts = execute_read_query(connection, allOutput)
+    print(contacts)
+
+#if user inputs 'b'
+def alphaContacts():
+    alphaOutput = "SELECT * FROM contacts ORDER BY contactDetails"
+    alphabet = execute_read_query(connection, alphaOutput)
+    print(alphabet)
+
+#if user inputs 'c'
+def dateContacts(): 
+    dateOutput = "SELECT * FROM contacts ORDER BY creationDate"
+    creation = execute_read_query(connection, dateOutput)
+    print(creation)
+
+#if user inputs 'a'
+def addContacts():
+    addition = "INSERT INTO contacts(contactDetails, creationDate) VALUES (%s, %s)"
+    newContact = 
+    creation = execute_read_query(connection, newContact)
+    print(creation)
+
+#if user inputs 'u'
+def updateContacts():
+    update = "UPDATE contacts FROM contacts ORDER BY creationDate"
+    creation = execute_read_query(connection, dateOutput)
+    print(creation)
+
+#Defining the menu of choices and getting the user input
+def menu(): 
+    print("MENU \n a - Add contact \n d - Remove contact \n u - Update contact details \n b - Output all contacts in alphabetical order\n c - Output all contacts by creation date \n o - Output all contacts \n q - Quit")
+
+menu()
+
+
+user_input = input("\nChoose an option: ")
+
+if user_input == 'o':
+    allContacts()
+elif user_input == 'b':
+    alphaContacts()
+elif user_input == 'c':
+    dateContacts()
+elif user_input == 'a':
+
+elif user_input == 'q':
+    quit
+
 
 
 
