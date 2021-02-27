@@ -30,7 +30,7 @@ def create_connection(host_name, user_name, user_password, db_name):
 
     return connection
 
-def execute_query(connection, query):
+def execute_query(connection, query,):
     cursor = connection.cursor()
     try:
         cursor.execute(query)
@@ -52,9 +52,28 @@ def execute_read_query(connection, query):
 connection = create_connection("cis3368.cmzgnnpcpmtg.us-east-2.rds.amazonaws.com", "crubio", "iLOVEjesus1019!", "cis3368DB")
 
 #Defining what happens to the database depending on the user option
+#if user inputs 'a'
+def addContacts():
+    nombre = input("Contact name (First and Last initial): ")
+    fecha = input("Todays date (YYYY-MM-DD): ")
+    addInput = "INSERT INTO contacts (contactDetails, creationDate) VALUES ('%s', '%s')" % (nombre, fecha)
+    execute_query(connection, addInput)
 
-#if user inputs 'o'  
-def allContacts(): 
+#if user inputs 'u'
+def updateContacts():
+    selectedID = int(input("Enter Contact ID you wish to update: "))
+    updated_contact = input("Enter new contact details (First and Last initial): ")
+    updateQuery = "UPDATE contacts SET contactDetails = '%s' WHERE id = %s" % (updated_contact, selectedID)
+    execute_query(connection, updateQuery)
+
+#if user inputs 'd'
+def deleteContacts():
+    selectedID = int(input("Enter Contact ID you wish to delete: "))
+    deleteQuery = "DELETE FROM contacts WHERE id = %s" % (selectedID)
+    execute_query(connection, deleteQuery)
+
+#if user inputs 'o'
+def allContacts():
     allOutput = "SELECT * FROM contacts"
     contacts = execute_read_query(connection, allOutput)
     print(contacts)
@@ -66,21 +85,8 @@ def alphaContacts():
     print(alphabet)
 
 #if user inputs 'c'
-def dateContacts(): 
+def dateContacts():
     dateOutput = "SELECT * FROM contacts ORDER BY creationDate"
-    creation = execute_read_query(connection, dateOutput)
-    print(creation)
-
-#if user inputs 'a'
-def addContacts():
-    addition = "INSERT INTO contacts(contactDetails, creationDate) VALUES (%s, %s)"
-    newContact = 
-    creation = execute_read_query(connection, newContact)
-    print(creation)
-
-#if user inputs 'u'
-def updateContacts():
-    update = "UPDATE contacts FROM contacts ORDER BY creationDate"
     creation = execute_read_query(connection, dateOutput)
     print(creation)
 
@@ -100,9 +106,16 @@ elif user_input == 'b':
 elif user_input == 'c':
     dateContacts()
 elif user_input == 'a':
-
+    addContacts()
+elif user_input == 'u':
+    allContacts()
+    updateContacts()
+elif user_input == 'd':
+    allContacts()
+    deleteContacts()
 elif user_input == 'q':
     quit
+
 
 
 
