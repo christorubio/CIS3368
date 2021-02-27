@@ -99,6 +99,7 @@ menu()
 
 user_input = input("\nChoose an option: ")
 
+#If/Else statements depending on what the user inputs
 if user_input == 'o':
     allContacts()
 elif user_input == 'b':
@@ -115,7 +116,8 @@ elif user_input == 'd':
     deleteContacts()
 elif user_input == 'q':
     quit
-
+else:
+    print("Please insert menu option.")
 
 
 
