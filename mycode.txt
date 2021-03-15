@@ -1,20 +1,12 @@
 This is my code file
 Python here... 
 
-Class File
-class Contacts:
-    def __init__(self, id, contactDetails, creationDate):
-        self.id = id
-        self.contactDetails = contactDetails
-        self.creationDate = creationDate
-        
-More python code here...
-from contacts import Contacts
-import datetime
-from datetime import date
+import requests
+import json
 import mysql.connector
 from mysql.connector import Error
 
+#creating database connection and queries (copied from earlier assignments)
 def create_connection(host_name, user_name, user_password, db_name):
     connection = None
     try:
@@ -30,7 +22,7 @@ def create_connection(host_name, user_name, user_password, db_name):
 
     return connection
 
-def execute_query(connection, query,):
+def execute_query(connection, query):
     cursor = connection.cursor()
     try:
         cursor.execute(query)
@@ -49,75 +41,70 @@ def execute_read_query(connection, query):
     except Error as e:
         print(f"The error '{e}' ocurred")
 
+
 connection = create_connection("cis3368.cmzgnnpcpmtg.us-east-2.rds.amazonaws.com", "crubio", "iLOVEjesus1019!", "cis3368DB")
 
-#Defining what happens to the database depending on the user option
-#if user inputs 'a'
-def addContacts():
-    nombre = input("Contact name (First and Last initial): ")
-    fecha = input("Todays date (YYYY-MM-DD): ")
-    addInput = "INSERT INTO contacts (contactDetails, creationDate) VALUES ('%s', '%s')" % (nombre, fecha)
-    execute_query(connection, addInput)
-
-#if user inputs 'u'
-def updateContacts():
-    selectedID = int(input("Enter Contact ID you wish to update: "))
-    updated_contact = input("Enter new contact details (First and Last initial): ")
-    updateQuery = "UPDATE contacts SET contactDetails = '%s' WHERE id = %s" % (updated_contact, selectedID)
-    execute_query(connection, updateQuery)
-
-#if user inputs 'd'
-def deleteContacts():
-    selectedID = int(input("Enter Contact ID you wish to delete: "))
-    deleteQuery = "DELETE FROM contacts WHERE id = %s" % (selectedID)
-    execute_query(connection, deleteQuery)
-
-#if user inputs 'o'
-def allContacts():
-    allOutput = "SELECT * FROM contacts"
-    contacts = execute_read_query(connection, allOutput)
-    print(contacts)
-
-#if user inputs 'b'
-def alphaContacts():
-    alphaOutput = "SELECT * FROM contacts ORDER BY contactDetails"
-    alphabet = execute_read_query(connection, alphaOutput)
-    print(alphabet)
-
-#if user inputs 'c'
-def dateContacts():
-    dateOutput = "SELECT * FROM contacts ORDER BY creationDate"
-    creation = execute_read_query(connection, dateOutput)
-    print(creation)
-
-#Defining the menu of choices and getting the user input
-def menu(): 
-    print("MENU \n a - Add contact \n d - Remove contact \n u - Update contact details \n b - Output all contacts in alphabetical order\n c - Output all contacts by creation date \n o - Output all contacts \n q - Quit")
-
+#creating different menu options for the user
+def menu():
+    print('\tWeather Menu')
+    print('S - current temperature by city search')
+    print('A - display all results')
+    print('X - sort results by city')
+    print('T - sort results by temperature')
+    print('Q - quit')
 menu()
 
+userinput = input("Pick an option: ")
 
-user_input = input("\nChoose an option: ")
 
-#If/Else statements depending on what the user inputs
-if user_input == 'o':
-    allContacts()
-elif user_input == 'b':
-    alphaContacts()
-elif user_input == 'c':
-    dateContacts()
-elif user_input == 'a':
-    addContacts()
-elif user_input == 'u':
-    allContacts()
-    updateContacts()
-elif user_input == 'd':
-    allContacts()
-    deleteContacts()
-elif user_input == 'q':
+#searching the API by the user input. Searching the weather database by city, also implemented my own API key into the search URL 
+def citysearch():
+    city_name = input("Please enter city name: ")
+    response = requests.get("http://api.openweathermap.org/data/2.5/weather?q=%s&units=imperial&appid=2f80c691f7ac74cd9dcab0fdf87f38d3" % (city_name))
+    #print(response.json())
+    response_json = response.json()
+    city_temp = response_json["main"]
+    city_temp_temp = city_temp['temp']
+    print(city_temp_temp, " Degrees Fahrenheit")
+    add_results = "INSERT INTO results (city, weatherdata) VALUES ('%s', '%s')" % (city_name, city_temp_temp)
+    execute_query(connection, add_results)
+
+#showing all results
+def allresults():
+    allcities = "SELECT * FROM results"
+    cities = execute_read_query(connection, allcities)
+    print(cities)
+
+#sorting results by city
+def sortresults():
+    sortcities = "SELECT * FROM results ORDER BY city"
+    sorty = execute_read_query(connection, sortcities)
+    print(sorty)
+
+#sorting results by temp from low to high 
+def tempresults():
+    sortbytemp = "SELECT * FROM results ORDER BY weatherdata"
+    tempsorty = execute_read_query(connection, sortbytemp)
+    print(tempsorty)
+
+#formatting the user input 
+if userinput == 's':
+    citysearch()
+elif userinput == 'a':
+    allresults()
+elif userinput == 'x':
+    sortresults()
+elif userinput == 't':
+    tempresults()
+elif userinput == 'q':
     quit
 else:
-    print("Please insert menu option.")
+    print("input proper menu option.")
+
+
+
+
+
 
 
 
